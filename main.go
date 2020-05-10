@@ -3,8 +3,9 @@ package main
 import (
 	"bufio"
 	"fmt"
-	"go-subword-nmt/bpe"
 	"os"
+
+	"github.com/duladissa/go-subword-nmt/bpe"
 )
 
 const (

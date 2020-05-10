@@ -2,13 +2,14 @@ package bpe
 
 import (
 	"bufio"
-	"go-subword-nmt/utils"
 	"log"
 	"math/rand"
 	"os"
 	"sort"
 	"strconv"
 	"strings"
+
+	"github.com/duladissa/go-subword-nmt/utils"
 )
 
 const (
