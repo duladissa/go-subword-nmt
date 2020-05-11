@@ -2,7 +2,6 @@ package bpe
 
 import (
 	"bufio"
-	"log"
 	"math/rand"
 	"os"
 	"sort"
@@ -10,6 +9,7 @@ import (
 	"strings"
 
 	"github.com/duladissa/go-subword-nmt/utils"
+	"github.com/pkg/errors"
 )
 
 const (
@@ -42,7 +42,7 @@ type symbol struct {
 }
 
 //NewBPE ... Create new BPE from codes and vocab
-func NewBPE(codesPath string, vocabPath string) *BPE {
+func NewBPE(codesPath string, vocabPath string) (*BPE, error) {
 	bpe := &BPE{
 		codes:         map[utils.Pair]int{},
 		vocab:         map[string]int{},
@@ -52,8 +52,11 @@ func NewBPE(codesPath string, vocabPath string) *BPE {
 		separator:     TokenDelim,
 	}
 	bpe.readVocab()
-	bpe.readCodes()
-	return bpe
+	err := bpe.readCodes()
+	if err != nil {
+		return nil, errors.Wrap(err, "Unable to create BPE")
+	}
+	return bpe, nil
 }
 
 func (bpe *BPE) readVocab() {
@@ -69,10 +72,10 @@ func (bpe *BPE) readVocab() {
 	}
 }
 
-func (bpe *BPE) readCodes() {
+func (bpe *BPE) readCodes() error {
 	f, err := os.OpenFile(bpe.codesPath, os.O_RDONLY, os.ModePerm)
 	if err != nil {
-		log.Fatalf("Cannot open codes file %s", err)
+		return errors.Wrap(err, "Cannot open codes file")
 	}
 	defer f.Close()
 	sc := bufio.NewScanner(f)
@@ -86,6 +89,7 @@ func (bpe *BPE) readCodes() {
 		bpe.codes[pair] = len(bpe.codes)
 		bpe.reversedCodes[splits[0]+splits[1]] = pair
 	}
+	return nil
 }
 
 //ProcessLine ... Processing line

@@ -20,12 +20,16 @@ const (
 )
 
 func main() {
-	bpe := bpe.NewBPE(CodeFilePath, "")
-	//Read from a file and writing to a file
-	//readSampleTestAndProcessLine(bpe)
+	bpe, err := bpe.NewBPE(CodeFilePath, "")
+	if err == nil {
+		//Read from a file and writing to a file
+		//readSampleTestAndProcessLine(bpe)
 
-	response := bpe.ProcessLine(Query, 0)
-	fmt.Println(response)
+		response := bpe.ProcessLine(Query, 0)
+		fmt.Println(response)
+	} else {
+		fmt.Println("Error ", err)
+	}
 }
 
 func readSampleTestAndProcessLine(bpe *bpe.BPE) {
