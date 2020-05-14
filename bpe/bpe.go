@@ -30,7 +30,7 @@ type BPE struct {
 	reversedCodes   map[string]utils.Pair
 	glossaries      map[string]int
 	glossariesRegex string
-	cache           interface{}
+	cache           map[string][]string
 	separator       string
 	codesPath       string
 	vocabPath       string
@@ -50,6 +50,7 @@ func NewBPE(codesPath string, vocabPath string) (*BPE, error) {
 		codesPath:     codesPath,
 		vocabPath:     vocabPath,
 		separator:     TokenDelim,
+		cache:         map[string][]string{},
 	}
 	bpe.readVocab()
 	err := bpe.readCodes()
@@ -152,6 +153,12 @@ func (bpe *BPE) isolateGlossaries(word string) []string {
 //Encode word based on list of BPE merge operations, which are applied consecutively
 func (bpe *BPE) encode(orig string, dropout int) []string {
 	//TODO
+	if dropout == 0 {
+		val, ok := bpe.cache[orig]
+		if ok {
+			return val
+		}
+	}
 	// if not dropout and orig in cache:
 	//     return cache[orig]
 	// if glossaries_regex and glossaries_regex.match(orig):
@@ -224,7 +231,7 @@ func (bpe *BPE) encode(orig string, dropout int) []string {
 	// if vocab:
 	//     word = check_vocab_and_split(word, bpe_codes_reverse, vocab, separator)
 
-	// cache[orig] = word
+	bpe.cache[orig] = word
 	// return word
 
 	return word
