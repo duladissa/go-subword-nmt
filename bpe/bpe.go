@@ -21,6 +21,7 @@ const (
 	TokenDelim = "@@"
 	//TokenDelimLength ... Token delim length
 	TokenDelimLength = 2
+	cacheMaxEntries  = 1000
 )
 
 //BPE ... BPE struct
@@ -96,6 +97,9 @@ func (bpe *BPE) readCodes() error {
 //ProcessLine ... Processing line
 //segment line, dealing with leading and trailing whitespace
 func (bpe *BPE) ProcessLine(line string, dropout int) string {
+	if len(bpe.cache) > cacheMaxEntries {
+		bpe.cache = map[string][]string{}
+	}
 	out := ""
 	leadingWhitespace := len(line) - len(strings.TrimLeft(line, "\r\n "))
 	if leadingWhitespace > 0 {
@@ -230,7 +234,6 @@ func (bpe *BPE) encode(orig string, dropout int) []string {
 	// word = tuple(word)
 	// if vocab:
 	//     word = check_vocab_and_split(word, bpe_codes_reverse, vocab, separator)
-
 	bpe.cache[orig] = word
 	// return word
 
